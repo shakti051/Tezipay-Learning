@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
+
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});
   static const route = '/notification-screen';
@@ -21,11 +22,13 @@ class NotificationScreen extends StatelessWidget {
               message.notification!.body!,
               style: TextStyle(fontSize: 18),
             ),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Card(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(50), // Makes it circular
+                    borderRadius:
+                        BorderRadius.circular(50), // Makes it circular
                   ),
                   elevation: 5, // Adds shadow
                   child: Container(
@@ -38,49 +41,59 @@ class NotificationScreen extends StatelessWidget {
                     ),
                     child: Text(
                       message.data["numOne"] ?? "00",
-                      style: TextStyle(fontSize: 32,color: Colors.white,fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 32,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
                     ), // Example content
                   ),
                 ),
-            Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(50), // Makes it circular
-              ),
-              elevation: 5, // Adds shadow
-              child: Container(
-                width: 100, // Width of circular card
-                height: 100, // Height of circular card
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle, // Ensures it's circular
-                  color: Colors.blue, // Card color
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(50), // Makes it circular
+                  ),
+                  elevation: 5, // Adds shadow
+                  child: Container(
+                    width: 100, // Width of circular card
+                    height: 100, // Height of circular card
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle, // Ensures it's circular
+                      color: Colors.blue, // Card color
+                    ),
+                    child: Text(
+                      message.data["numTwo"] ?? "00",
+                      style: TextStyle(
+                          fontSize: 32,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                    ), // Example content
+                  ),
                 ),
-                child: Text(
-                  message.data["numTwo"] ?? "00",
-                  style: TextStyle(fontSize: 32,color: Colors.white,fontWeight: FontWeight.bold),
-                ), // Example content
-              ),
-            ),  
-            Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(50), // Makes it circular
-              ),
-              elevation: 5, // Adds shadow
-              child: Container(
-                width: 100, // Width of circular card
-                height: 100, // Height of circular card
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle, // Ensures it's circular
-                  color: Colors.blue, // Card color
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(50), // Makes it circular
+                  ),
+                  elevation: 5, // Adds shadow
+                  child: Container(
+                    width: 100, // Width of circular card
+                    height: 100, // Height of circular card
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle, // Ensures it's circular
+                      color: Colors.blue, // Card color
+                    ),
+                    child: Text(
+                      message.data["numThree"] ?? "00",
+                      style: TextStyle(
+                          fontSize: 32,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                    ), // Example content
+                  ),
                 ),
-                child: Text(
-                  message.data["numThree"] ?? "00",
-                  style: TextStyle(fontSize: 32,color: Colors.white,fontWeight: FontWeight.bold),
-                ), // Example content
-              ),
-            ),
-
               ],
             ),
           ],

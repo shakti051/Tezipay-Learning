@@ -1,6 +1,7 @@
 import 'package:demo_challenge_code/api/dashboard_screen.dart';
 import 'package:demo_challenge_code/api/firebase_api.dart';
 import 'package:demo_challenge_code/api/home_screen.dart';
+import 'package:demo_challenge_code/api/main_screen.dart';
 import 'package:demo_challenge_code/api/notification_screen.dart';
 import 'package:demo_challenge_code/firebase_options.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+      //home: MainScreen(),
       home: HomeScreen(),
       navigatorKey: navigatorKey,
       routes: {
