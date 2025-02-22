@@ -1,0 +1,2 @@
+D:/RajyaSabha Learning/reminder_app/android/app/.cxx/RelWithDebInfo/604q5q3t/arm64-v8a/CMakeFiles/edit_cache.dir
+D:/RajyaSabha Learning/reminder_app/android/app/.cxx/RelWithDebInfo/604q5q3t/arm64-v8a/CMakeFiles/rebuild_cache.dir

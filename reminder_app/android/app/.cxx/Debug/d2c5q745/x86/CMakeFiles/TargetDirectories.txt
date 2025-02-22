@@ -1,0 +1,2 @@
+D:/RajyaSabha Learning/reminder_app/android/app/.cxx/Debug/d2c5q745/x86/CMakeFiles/edit_cache.dir
+D:/RajyaSabha Learning/reminder_app/android/app/.cxx/Debug/d2c5q745/x86/CMakeFiles/rebuild_cache.dir
