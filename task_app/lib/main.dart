@@ -38,8 +38,7 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             title: 'Flutter Tasks App',
             debugShowCheckedModeBanner: false,
-            theme:
-                state.switchValue 
+            theme:state.switchValue 
                     ? AppThemes.appThemeData[AppTheme.darkTheme]
                     : AppThemes.appThemeData[AppTheme.lightTheme],
             home: TabsScreen(),

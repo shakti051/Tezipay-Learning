@@ -55,6 +55,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   var task = Task(title: titleController.text,
                   id: GUIDGen.generate(),
                   description: descriptionController.text,
+                  date: DateTime.now().toString()
                   );
                   context.read<TasksBloc>().add(AddTask(task: task));
                   debugPrint("Task is added ");
