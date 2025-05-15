@@ -1,20 +1,24 @@
-import 'package:counter_app/bloc/bloc_imports.dart';
-import 'package:counter_app/bloc/counter/counter_state.dart';
+import 'package:counter_app/blocs/bloc_imports.dart';
+import 'package:counter_app/blocs/counter/counter_state.dart';
+import 'package:counter_app/blocs/toggle/toggle_event.dart';
+import 'package:counter_app/blocs/toggle/toggle_state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import 'bloc/my_bloc_observer.dart';
+import 'blocs/my_bloc_observer.dart';
+import 'blocs/toggle/toggle_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-   HydratedBloc.storage = await HydratedStorage.build(
-    storageDirectory: kIsWeb
-        ? HydratedStorageDirectory.web
-        : HydratedStorageDirectory((await getTemporaryDirectory()).path),
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory:
+        kIsWeb
+            ? HydratedStorageDirectory.web
+            : HydratedStorageDirectory((await getTemporaryDirectory()).path),
   );
-  
+
   Bloc.observer = MyBlocObserver();
-  
+
   runApp(const MyApp());
 }
 
@@ -24,8 +28,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => CounterBloc(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<CounterBloc>(
+          create: (BuildContext context) => CounterBloc(),
+        ),
+        BlocProvider<ThemeBloc>(create: (BuildContext context) => ThemeBloc()),
+      ],
+
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -38,8 +48,6 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-  final int _counter = 0;
-
   const MyHomePage({super.key});
 
   @override
@@ -111,6 +119,18 @@ class MyHomePage extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
+            Text("data"),
+            BlocBuilder<ThemeBloc, ThemeState>(
+              builder: (context, state) {
+                return Switch(
+                  value: state.isDarkMode,
+                  onChanged: (_) {
+                    debugPrint("theme value : ${state.isDarkMode}");
+                    context.read<ThemeBloc>().add(ToggleTheme());
+                  },
+                );
+              },
             ),
           ],
         ),
