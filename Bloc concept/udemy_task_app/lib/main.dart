@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'pages/home/views/home.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -18,3 +17,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+//command
+//*flutter create --template=package task_repository
+//*dart create --template=package task_repository

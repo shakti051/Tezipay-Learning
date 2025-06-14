@@ -8,6 +8,7 @@ class GetPostBloc extends Bloc<GetPostEvent, GetPostState> {
   GetPostBloc() : super(GetPostLoadingState()) {
     on<FetchPostsEvent>(_fetchPosts);
   }
+  
   Future<void> _fetchPosts(
       FetchPostsEvent event, Emitter<GetPostState> emit) async {
     emit(GetPostLoadingState());

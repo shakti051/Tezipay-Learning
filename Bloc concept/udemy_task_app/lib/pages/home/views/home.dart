@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_repository/task_repository.dart';
 import '../../add_task/views/fab.dart';
 import 'category_card.dart';
 import 'selected_category.dart';
@@ -11,12 +12,12 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const _HomeView();
+    return  _HomeView();
   }
 }
 
 class _HomeView extends StatelessWidget {
-  const _HomeView({super.key});
+     _HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
