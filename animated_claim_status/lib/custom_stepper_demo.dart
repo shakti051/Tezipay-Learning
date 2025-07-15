@@ -141,9 +141,9 @@ class _CustomStepperDemoState extends State<CustomStepperDemo>
             ? const Icon(Icons.check, color: Colors.green, size: 20)
             : Text(
                 step.index.toString(),
-                style: TextStyle(
+                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: step.isCurrent ? Colors.grey[700] : Colors.black,
+                  color: step.isCurrent ? Colors.grey[700] : Colors.black
                 ),
               ),
       ),
