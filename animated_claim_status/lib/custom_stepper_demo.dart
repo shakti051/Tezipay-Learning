@@ -15,25 +15,26 @@ class _CustomStepperDemoState extends State<CustomStepperDemo>
   late final List<AnimationController> _lineControllers;
   late final List<Animation<double>> _lineAnimations;
 
-  int currentStep = 0;
+  int currentStep = 1;
 
   final List<_StepData> steps = [
-    _StepData("Submitted", "Pending", "06 Jun 2025, 10:22"),
-    _StepData("Initiated", "Pending", "07 Jun 2025, 10:22"),
-    _StepData("Review", "Pending", "08 Jun 2025, 10:13"),
-    _StepData("Approve", "Pending", "09 Jun 2025, 10:23"),
-    _StepData("Extra", "Pending", "10 Jun 2025, 10:25"),
+    _StepData("Submitted", "Success", 1,"06 Jun 2025, 10:22",),
+    _StepData("Initiated", "Success", 2,"07 Jun 2025, 10:22"),
+    _StepData("Review", "Pending", 3,"08 Jun 2025, 10:13"),
+    _StepData("Approve", "Pending", 4,"09 Jun 2025, 10:23"),
+    _StepData("Extra", "Pending", 5,"10 Jun 2025, 10:25"),
   ];
 
   @override
   void initState() {
     super.initState();
 
-    steps[0].isCurrent = true;
+    steps[0].isCompleted = true;
+    steps[1].isCurrent = true;
 
     _glowController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 3),
     )..repeat(reverse: true);
 
     _glowAnimation = Tween<double>(
@@ -45,7 +46,7 @@ class _CustomStepperDemoState extends State<CustomStepperDemo>
       steps.length - 1,
       (_) => AnimationController(
         vsync: this,
-        duration: const Duration(seconds: 2),
+        duration: const Duration(seconds: 1),
       ),
     );
 
@@ -57,18 +58,36 @@ class _CustomStepperDemoState extends State<CustomStepperDemo>
   }
 
   void startAutoProgress() async {
-    for (int i = 1; i < steps.length; i++) {
-      await _lineControllers[i - 1].forward();
+    for (int i = 0; i < _lineControllers.length; i++) {
+      // Stop if next step is pending
+      if (steps[i + 1].status.toLowerCase() == 'pending') {
+        await _lineControllers[i].forward();
+        setState(() {
+          steps[i + 1]
+            ..isCurrent = true
+            ..isGlowingOrange = true;
+          currentStep = i + 1;
+        });
+        break;
+      }
+
+      await _lineControllers[i].forward();
 
       setState(() {
-        steps[i - 1]
+        steps[i + 1]
           ..isCompleted = true
-          ..status = "Success"
           ..isCurrent = false
-          ..isConnected = true;
+          ..isGlowingGreen = true;
 
-        steps[i].isCurrent = true;
-        currentStep = i;
+        if (i + 2 < steps.length) {
+          steps[i + 2].isCurrent = true;
+          currentStep = i + 2;
+        }
+      });
+
+      await Future.delayed(const Duration(seconds: 1));
+      setState(() {
+        steps[i + 1].isGlowingGreen = false;
       });
     }
   }
@@ -83,72 +102,80 @@ class _CustomStepperDemoState extends State<CustomStepperDemo>
   }
 
   Widget buildStepItem(_StepData step, double glowRadius) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: step.isCompleted ? Colors.green : Colors.white,
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: step.isCurrent
-                  ? Colors.orange
-                  : step.isCompleted
-                  ? Colors.green
-                  : Colors.grey,
-              width: 3,
-            ),
-            boxShadow: step.isCurrent
-                ? [
-                    BoxShadow(
-                      color: Colors.orange.withOpacity(0.5),
-                      blurRadius: glowRadius,
-                      spreadRadius: 2,
-                    ),
-                  ]
-                : [],
-          ),
-          child: Center(
-            child: step.isCompleted
-                ? const Icon(Icons.check, color: Colors.white, size: 20)
-                : Text(
-                    step.title[0],
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: step.isCurrent ? Colors.grey[700] : Colors.black,
-                    ),
-                  ),
-          ),
-        ),     
-      ],
+    Color borderColor = Colors.grey;
+    Color backgroundColor = step.isCompleted
+        ? Colors.white
+        : Colors.grey.shade400;
+
+    if (step.isGlowingGreen) {
+      borderColor = Colors.green;
+    } else if (step.isGlowingOrange) {
+      borderColor = Colors.orange;
+      backgroundColor = Colors.white;
+    } else if (step.isCompleted) {
+      borderColor = Colors.green;
+    }
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      width: 44,
+      height: 44,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        shape: BoxShape.circle,
+        border: Border.all(color: borderColor, width: 3),
+        boxShadow: step.isGlowingGreen || step.isGlowingOrange
+            ? [
+                BoxShadow(
+                  color: step.isGlowingGreen
+                      ? Colors.green.withOpacity(0.6)
+                      : Colors.orange.withOpacity(0.6),
+                  blurRadius: glowRadius,
+                  spreadRadius: 3,
+                ),
+              ]
+            : [],
+      ),
+      child: Center(
+        child: step.isCompleted
+            ? const Icon(Icons.check, color: Colors.green, size: 20)
+            : Text(
+                step.index.toString(),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: step.isCurrent ? Colors.grey[700] : Colors.black,
+                ),
+              ),
+      ),
     );
   }
 
   Widget buildStepStatus(_StepData step) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          step.title,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        Text(
-          step.status,
-          style: TextStyle(
-            color: step.status == "Success" ? Colors.green : Colors.orange,
-            fontSize: 12,
+        Text(step.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+          decoration: BoxDecoration(
+            color: step.status == "Success"
+                ? const Color.fromARGB(80, 69, 254, 81)
+                : Color.fromARGB(255, 208, 208, 208),
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Text(
+            step.status,
+            style: TextStyle(
+              color: step.status == "Success" ? Colors.green : Colors.black38,
+              fontSize: 12,
+            ),
           ),
         ),
-        // Text(
-        //   step.timestamp,
-        //   style: const TextStyle(fontSize: 10, color: Colors.black54),
-        // ),
       ],
     );
+  }
+
+  Widget buildStepDateTime(_StepData step) {
+    return Text(step.timestamp, style: const TextStyle(fontSize: 12));
   }
 
   Widget buildAnimatedLine(int index) {
@@ -156,22 +183,25 @@ class _CustomStepperDemoState extends State<CustomStepperDemo>
       animation: _lineAnimations[index],
       builder: (context, child) {
         final progress = _lineAnimations[index].value;
-        final isAnimating = progress > 0;
-
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 0),
-          child: isAnimating
-              ? CustomPaint(
+        return SizedBox(
+          height: 4,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: CustomPaint(
+                  painter: _DottedLinePainter(color: Colors.grey),
+                ),
+              ),
+              Positioned.fill(
+                child: CustomPaint(
                   painter: _AnimatedLinePainter(
                     progress: progress,
-                    color: progress == 1.0 ? Colors.green : Colors.green,
+                    color: Colors.green,
                   ),
-                  child: const SizedBox(height: 4),
-                )
-              : CustomPaint(
-                  painter: _DottedLinePainter(color: Colors.grey),
-                  child: const SizedBox(height: 4),
                 ),
+              ),
+            ],
+          ),
         );
       },
     );
@@ -181,31 +211,36 @@ class _CustomStepperDemoState extends State<CustomStepperDemo>
     return Column(
       children: [
         Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(steps.length * 2 - 1, (index) {
+            if (index.isOdd) return const Expanded(child: SizedBox());
+            return buildStepStatus(steps[index ~/ 2]);
+          }),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(steps.length * 2 - 1, (index) {
             if (index.isOdd) {
-              final lineIndex = index ~/ 2;
-              return Expanded(child: buildAnimatedLine(lineIndex));
+              return Expanded(child: buildAnimatedLine(index ~/ 2));
             } else {
               final step = steps[index ~/ 2];
               final isGlowing = step.isCurrent && (index ~/ 2 == currentStep);
-              return buildStepItem(step, isGlowing ? _glowAnimation.value : 0);
+              return buildStepItem(
+                step,
+                isGlowing || step.isGlowingGreen || step.isGlowingOrange
+                    ? _glowAnimation.value
+                    : 0,
+              );
             }
           }),
         ),
+        const SizedBox(height: 8),
         Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(steps.length * 2 - 1, (index) {
-            if (index.isOdd) {
-              final lineIndex = index ~/ 2;
-              return Expanded(
-                child: Opacity(opacity: 0, child: buildAnimatedLine(lineIndex)),
-              );
-            } else {
-              final step = steps[index ~/ 2];
-
-              return buildStepStatus(step);
-            }
+            if (index.isOdd) return const Expanded(child: SizedBox());
+            return buildStepDateTime(steps[index ~/ 2]);
           }),
         ),
       ],
@@ -253,19 +288,23 @@ class _CustomStepperDemoState extends State<CustomStepperDemo>
 class _StepData {
   final String title;
   final String timestamp;
+  int index;
   String status;
   bool isCompleted;
-  bool isConnected;
   bool isCurrent;
+  bool isGlowingGreen;
+  bool isGlowingOrange;
 
   _StepData(
     this.title,
     this.status,
-    this.timestamp, [
+    this.index,
+    this.timestamp, {
     this.isCompleted = false,
-    this.isConnected = false,
     this.isCurrent = false,
-  ]);
+    this.isGlowingGreen = false,
+    this.isGlowingOrange = false,
+  });
 }
 
 class _AnimatedLinePainter extends CustomPainter {
@@ -281,19 +320,16 @@ class _AnimatedLinePainter extends CustomPainter {
       ..strokeWidth = 4
       ..style = PaintingStyle.stroke;
 
-    final double lineLength = size.width * progress;
-
     canvas.drawLine(
       Offset(0, size.height / 2),
-      Offset(lineLength, size.height / 2),
+      Offset(size.width * progress, size.height / 2),
       paint,
     );
   }
 
   @override
-  bool shouldRepaint(covariant _AnimatedLinePainter oldDelegate) {
-    return oldDelegate.progress != progress || oldDelegate.color != color;
-  }
+  bool shouldRepaint(covariant _AnimatedLinePainter oldDelegate) =>
+      oldDelegate.progress != progress || oldDelegate.color != color;
 }
 
 class _DottedLinePainter extends CustomPainter {
